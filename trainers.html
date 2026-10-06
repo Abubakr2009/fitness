@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sportzal va individual trening | Тренеры</title>
+    <!-- Подключение современных шрифтов -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           1. CSS ПЕРЕМЕННЫЕ И БАЗОВЫЕ НАСТРОЙКИ
+        ========================================= */
+        :root {
+            --bg-color: #050505;
+            --surface-color: #111111;
+            --surface-light: #1a1a1a;
+            --primary-color: #cfff04; /* Неоновый зеленый */
+            --primary-hover: #b3e600;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --font-headers: 'Syne', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Кастомный курсор */
+        }
+
+        html { scroll-behavior: smooth; background-color: var(--bg-color); }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-main);
+            background-color: var(--bg-color);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-light); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        /* =========================================
+           2. КАСТОМНЫЙ КУРСОР
+        ========================================= */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--primary-color); }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 2px solid var(--primary-color);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* =========================================
+           3. ПРЕЛОАДЕР
+        ========================================= */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: var(--bg-color);
+            z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .loader-text {
+            font-family: var(--font-headers);
+            font-size: 3rem; color: transparent;
+            -webkit-text-stroke: 1px var(--primary-color);
+            text-transform: uppercase; letter-spacing: 5px;
+            animation: pulseText 1.5s infinite;
+        }
+        @keyframes pulseText {
+            0% { text-shadow: none; color: transparent; }
+            50% { text-shadow: 0 0 20px var(--primary-color); color: var(--primary-color); }
+            100% { text-shadow: none; color: transparent; }
+        }
+
+        /* =========================================
+           4. НАВИГАЦИЯ (HEADER)
+        ========================================= */
+        header {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; transition: var(--transition);
+        }
+        header.scrolled {
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 5%;
+        }
+        .logo {
+            font-family: var(--font-headers); font-size: 1.8rem; font-weight: 800;
+            color: var(--text-main); text-decoration: none; text-transform: uppercase;
+        }
+        .logo span { color: var(--primary-color); }
+        nav ul { list-style: none; display: flex; gap: 40px; }
+        nav ul li a {
+            color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            text-transform: uppercase; position: relative; padding: 5px 0; transition: var(--transition);
+        }
+        nav ul li a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+            background-color: var(--primary-color); transition: var(--transition);
+        }
+        nav ul li a:hover { color: var(--primary-color); }
+        nav ul li a:hover::after, nav ul li a.active::after { width: 100%; }
+        nav ul li a.active { color: var(--primary-color); }
+        
+        .join-btn {
+            background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color);
+            padding: 12px 30px; font-family: var(--font-body); font-weight: 800; text-transform: uppercase;
+            border-radius: 50px; transition: var(--transition); position: relative; overflow: hidden; z-index: 1;
+        }
+        .join-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 0; height: 100%;
+            background-color: var(--primary-color); z-index: -1; transition: var(--transition);
+        }
+        .join-btn:hover { color: var(--bg-color); }
+        .join-btn:hover::before { width: 100%; }
+
+        /* =========================================
+           5. HERO БАННЕР
+        ========================================= */
+        .page-banner {
+            position: relative;
+            padding: 180px 5% 80px;
+            background: linear-gradient(180deg, rgba(20,20,20,0.9) 0%, var(--bg-color) 100%),
+                        url('https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=2069&auto=format&fit=crop') center/cover;
+            text-align: center;
+        }
+        .banner-title {
+            font-family: var(--font-headers);
+            font-size: 4.5rem; text-transform: uppercase;
+            line-height: 1.1; margin-bottom: 20px;
+        }
+        .banner-title span { color: var(--primary-color); }
+        .banner-subtitle { color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto; }
+
+        /* =========================================
+           6. СЕТКА ТРЕНЕРОВ (С 3D ЭФФЕКТОМ)
+        ========================================= */
+        .section-padding { padding: 80px 5%; }
+        
+        .trainers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 50px;
+            perspective: 1000px; /* Важно для 3D эффекта */
+        }
+
+        .trainer-card-wrapper {
+            /* Обертка для 3D трансформации */
+            transform-style: preserve-3d;
+            transition: transform 0.1s;
+            width: 100%;
+        }
+
+        .trainer-card {
+            background: var(--surface-color);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            transform: translateZ(20px); /* Выдвигаем карточку вперед */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: border-color 0.4s ease;
+        }
+        .trainer-card:hover {
+            border-color: rgba(207,255,4,0.3);
+        }
+
+        .trainer-img-wrap {
+            position: relative;
+            height: 350px;
+            overflow: hidden;
+            background: var(--surface-light);
+        }
+        .trainer-img-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(80%);
+            transition: all 0.5s ease;
+        }
+        .trainer-card-wrapper:hover .trainer-img-wrap img {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        .trainer-category {
+            position: absolute;
+            bottom: 20px; left: 20px;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            padding: 8px 15px;
+            font-family: var(--font-headers);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transform: translateZ(40px); /* 3D эффект слоя */
+        }
+
+        .trainer-info {
+            padding: 30px;
+            transform: translateZ(30px); /* 3D эффект текста */
+        }
+        .trainer-name {
+            font-family: var(--font-headers);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        .trainer-quote {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            border-left: 3px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        /* Анимированные шкалы навыков */
+        .skills-wrapper {
+            margin-bottom: 25px;
+        }
+        .skill-item {
+            margin-bottom: 12px;
+        }
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .skill-track {
+            width: 100%;
+            height: 6px;
+            background: var(--surface-light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .skill-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0; /* Стартовое значение для анимации */
+            border-radius: 3px;
+            transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Соцсети тренера */
+        .trainer-socials {
+            display: flex;
+            gap: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+        }
+        .social-link {
+            width: 40px; height: 40px;
+            background: var(--surface-light);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            transition: var(--transition);
+        }
+        .social-link svg {
+            width: 18px; height: 18px;
+            fill: var(--text-main);
+            transition: var(--transition);
+        }
+        .social-link:hover { background: var(--primary-color); }
+        .social-link:hover svg { fill: var(--bg-color); }
+
+        /* =========================================
+           7. СЕКЦИЯ ПОДБОРА ТРЕНЕРА
+        ========================================= */
+        .quiz-section {
+            background: linear-gradient(90deg, var(--surface-color) 0%, #0a0a0a 100%);
+            border-top: 1px solid #222;
+            border-bottom: 1px solid #222;
+            padding: 100px 5%;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .quiz-title {
+            font-family: var(--font-headers);
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .quiz-title span { color: var(--primary-color); }
+        .quiz-form {
+            background: var(--bg-color);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(207,255,4,0.1);
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: left;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .input-group select, .input-group input {
+            background: var(--surface-light);
+            border: 1px solid #333;
+            padding: 15px;
+            color: white;
+            font-family: var(--font-body);
+            border-radius: 5px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .input-group select:focus, .input-group input:focus { border-color: var(--primary-color); }
+        .submit-btn {
+            grid-column: span 2;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 20px;
+            font-family: var(--font-headers);
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: var(--transition);
+        }
+        .submit-btn:hover { background: var(--text-main); }
+
+        /* =========================================
+           8. ФУТЕР
+        ========================================= */
+        footer {
+            background-color: #000;
+            padding: 80px 5% 30px;
+            border-top: 1px solid #222;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+        .footer-about p { color: var(--text-muted); margin-top: 20px; max-width: 300px; }
+        .footer-title { font-family: var(--font-headers); font-size: 1.2rem; margin-bottom: 25px; text-transform: uppercase; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 15px; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .footer-links a:hover { color: var(--primary-color); padding-left: 10px; }
+        .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid #222; color: #555; font-size: 0.9rem; }
+
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            nav ul { display: none; }
+            .banner-title { font-size: 3rem; }
+            .quiz-form { grid-template-columns: 1fr; }
+            .submit-btn { grid-column: span 1; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- КУРСОР -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <!-- ПРЕЛОАДЕР -->
+    <div id="preloader">
+        <div class="loader-text">Команда...</div>
+    </div>
+
+    <!-- НАВИГАЦИЯ -->
+    <header id="header">
+        <a href="index.html" class="logo">Sport<span>zal</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="programs.html">Programs</a></li>
+                <li><a href="trainers.html" class="active">Trainers</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <button class="join-btn">Вступить в клуб</button>
+    </header>
+
+    <main>
+        <!-- HERO БАННЕР -->
+        <section class="page-banner">
+            <h1 class="banner-title">Наши <span>Тренеры</span></h1>
+            <p class="banner-subtitle">Элита фитнеса. Профессионалы, которые доведут тебя до результата через дисциплину, науку и мотивацию.</p>
+        </section>
+
+        <!-- СЕТКА ТРЕНЕРОВ -->
+        <section class="section-padding">
+            <div class="trainers-grid">
+                
+                <!-- Тренер 1 -->
+                <div class="trainer-card-wrapper reveal">
+                    <div class="trainer-card">
+                        <div class="trainer-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1000&auto=format&fit=crop" alt="Алексей Громов">
+                            <span class="trainer-category">Master Coach</span>
+                        </div>
+                        <div class="trainer-info">
+                            <h3 class="trainer-name">Алексей Громов</h3>
+                            <p class="trainer-quote">"Твоя слабость сегодня — это твоя сила завтра. Не сдавайся."</p>
+                            
+                            <div class="skills-wrapper">
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Кроссфит & Сила</span> <span class="counter">95%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="95%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Выносливость</span> <span class="counter">90%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="90%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Реабилитация</span> <span class="counter">70%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="70%"></div></div>
+                                </div>
+                            </div>
+
+                            <div class="trainer-socials">
+                                <a href="#" class="social-link" title="Instagram">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.98a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>
+                                </a>
+                                <a href="#" class="social-link" title="Telegram">
+                                    <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.882-.666 3.467-1.51 5.78-2.511 6.939-2.998 3.3-1.396 3.986-1.634 4.43-1.641z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Тренер 2 -->
+                <div class="trainer-card-wrapper reveal">
+                    <div class="trainer-card">
+                        <div class="trainer-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?q=80&w=1000&auto=format&fit=crop" alt="Тимур Махмудов">
+                            <span class="trainer-category">Fight & Cardio</span>
+                        </div>
+                        <div class="trainer-info">
+                            <h3 class="trainer-name">Тимур Махмудов</h3>
+                            <p class="trainer-quote">"Дисциплина бьет класс. На ринге и в зале нет места отговоркам."</p>
+                            
+                            <div class="skills-wrapper">
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Бокс & Реакция</span> <span class="counter">98%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="98%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Выносливость</span> <span class="counter">92%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="92%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Функционал</span> <span class="counter">85%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="85%"></div></div>
+                                </div>
+                            </div>
+
+                            <div class="trainer-socials">
+                                <a href="#" class="social-link" title="Instagram">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.98a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>
+                                </a>
+                                <a href="#" class="social-link" title="Telegram">
+                                    <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.882-.666 3.467-1.51 5.78-2.511 6.939-2.998 3.3-1.396 3.986-1.634 4.43-1.641z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Тренер 3 -->
+                <div class="trainer-card-wrapper reveal">
+                    <div class="trainer-card">
+                        <div class="trainer-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1000&auto=format&fit=crop" alt="Елена Соколова">
+                            <span class="trainer-category">Mind & Body</span>
+                        </div>
+                        <div class="trainer-info">
+                            <h3 class="trainer-name">Елена Соколова</h3>
+                            <p class="trainer-quote">"Гибкость тела порождает гибкость ума. Найди свой баланс."</p>
+                            
+                            <div class="skills-wrapper">
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Гибкость</span> <span class="counter">99%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="99%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Контроль дыхания</span> <span class="counter">95%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="95%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Сила кора</span> <span class="counter">80%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="80%"></div></div>
+                                </div>
+                            </div>
+
+                            <div class="trainer-socials">
+                                <a href="#" class="social-link" title="Instagram">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.98a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Тренер 4 (Можно добавить больше карточек, принцип тот же) -->
+                <div class="trainer-card-wrapper reveal">
+                    <div class="trainer-card">
+                        <div class="trainer-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1567598508481-65985588ce2a?q=80&w=1000&auto=format&fit=crop" alt="Рустам Алиев">
+                            <span class="trainer-category">Bodybuilding</span>
+                        </div>
+                        <div class="trainer-info">
+                            <h3 class="trainer-name">Рустам Алиев</h3>
+                            <p class="trainer-quote">"Мышцы растут там, где кончается зона комфорта."</p>
+                            
+                            <div class="skills-wrapper">
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Гипертрофия</span> <span class="counter">96%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="96%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Нутрициология</span> <span class="counter">90%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="90%"></div></div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-header"><span>Биомеханика</span> <span class="counter">88%</span></div>
+                                    <div class="skill-track"><div class="skill-fill" data-percent="88%"></div></div>
+                                </div>
+                            </div>
+                            <div class="trainer-socials">
+                                <!-- Иконки... -->
+                                <a href="#" class="social-link"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.98a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ: ПОДОБРАТЬ ТРЕНЕРА -->
+        <section class="quiz-section reveal">
+            <div class="quiz-container">
+                <h2 class="quiz-title">Не знаешь, <span>кого выбрать?</span></h2>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">Ответь на пару вопросов, и мы подберем идеального наставника под твои цели.</p>
+                
+                <form class="quiz-form" id="trainerMatchForm">
+                    <div class="input-group">
+                        <label>Твоя главная цель</label>
+                        <select required>
+                            <option value="">Выбери цель...</option>
+                            <option value="weight_loss">Сжигание жира и рельеф</option>
+                            <option value="muscle_gain">Набор мышечной массы</option>
+                            <option value="flexibility">Здоровая спина и гибкость</option>
+                            <option value="endurance">Выносливость (Кроссфит)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Уровень подготовки</label>
+                        <select required>
+                            <option value="">Твой уровень...</option>
+                            <option value="beginner">Новичок (никогда не был в зале)</option>
+                            <option value="intermediate">Средний (занимаюсь иногда)</option>
+                            <option value="pro">Профи (нужен хардкор)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Предпочтения по полу тренера</label>
+                        <select>
+                            <option value="any">Не имеет значения</option>
+                            <option value="male">Мужчина</option>
+                            <option value="female">Женщина</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Твой номер телефона</label>
+                        <input type="tel" placeholder="+998 (__) ___-__-__" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Подобрать тренера</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ФУТЕР -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-about">
+                <a href="index.html" class="logo">Sport<span>zal</span></a>
+                <p>Центр трансформации тела и духа в Ташкенте. Мы создаем условия для твоего рекорда.</p>
+            </div>
+            <div>
+                <h4 class="footer-title">Навигация</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="programs.html">Программы</a></li>
+                    <li><a href="trainers.html">Тренеры</a></li>
+                    <li><a href="pricing.html">Тарифы</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">Услуги</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Кроссфит</a></li>
+                    <li><a href="#">Бодибилдинг</a></li>
+                    <li><a href="#">Йога & Пилатес</a></li>
+                    <li><a href="#">TRX Зона</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">Контакты</h4>
+                <ul class="footer-links">
+                    <li><span style="color: var(--primary-color);">📍</span> Ташкент, Узбекистан</li>
+                    <li><span style="color: var(--primary-color);">📞</span> +998 90 123 45 67</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Sportzal va individual trening. Все права защищены.
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT МАГИЯ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Прелоадер
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.display = 'none'; }, 800);
+            }, 1000);
+
+            // 2. Кастомный курсор
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            window.addEventListener('mousemove', (e) => {
+                cursorDot.style.left = `${e.clientX}px`;
+                cursorDot.style.top = `${e.clientY}px`;
+                cursorOutline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+            });
+
+            // 3. Header Scroll
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) header.classList.add('scrolled');
+                else header.classList.remove('scrolled');
+            });
+
+            // 4. Scroll Reveal & Анимация шкал (Skill Bars)
+            const reveals = document.querySelectorAll('.reveal');
+            let animatedBars = false;
+
+            const revealOnScroll = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        
+                        // Если в карточке есть скиллы, анимируем их
+                        const skillFills = entry.target.querySelectorAll('.skill-fill');
+                        if(skillFills.length > 0) {
+                            setTimeout(() => {
+                                skillFills.forEach(fill => {
+                                    fill.style.width = fill.getAttribute('data-percent');
+                                });
+                            }, 300); // Небольшая задержка после появления карточки
+                        }
+                        
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            reveals.forEach(r => revealOnScroll.observe(r));
+
+            // 5. 3D ЭФФЕКТ ДЛЯ КАРТОЧЕК ТРЕНЕРОВ (Vanilla JS Tilt Effect)
+            const cards = document.querySelectorAll('.trainer-card-wrapper');
+            
+            cards.forEach(wrapper => {
+                const card = wrapper.querySelector('.trainer-card');
+                
+                wrapper.addEventListener('mousemove', (e) => {
+                    const rect = wrapper.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // x position within the element
+                    const y = e.clientY - rect.top;  // y position within the element
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    // Вычисляем угол поворота (чем дальше от центра, тем больше наклон)
+                    const rotateX = ((y - centerY) / centerY) * -10; // Max 10 deg
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    
+                    card.style.transform = `translateZ(20px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                
+                // Возврат в исходное положение при уходе мыши
+                wrapper.addEventListener('mouseleave', () => {
+                    card.style.transition = 'transform 0.5s ease';
+                    card.style.transform = `translateZ(20px) rotateX(0deg) rotateY(0deg)`;
+                    
+                    // Убираем транзишен после возврата, чтобы hover снова был плавным
+                    setTimeout(() => {
+                        card.style.transition = 'border-color 0.4s ease';
+                    }, 500);
+                });
+                
+                // Добавляем плавность при входе
+                wrapper.addEventListener('mouseenter', () => {
+                    card.style.transition = 'none'; // Убираем задержку для быстрого следования за курсором
+                });
+            });
+
+            // 6. Форма подбора тренера (Имитация отправки)
+            const matchForm = document.getElementById('trainerMatchForm');
+            matchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const btn = matchForm.querySelector('.submit-btn');
+                const originalText = btn.innerText;
+                
+                btn.innerText = 'Анализируем...';
+                btn.style.backgroundColor = '#fff';
+                btn.style.color = '#000';
+                
+                setTimeout(() => {
+                    btn.innerText = 'Заявка отправлена!';
+                    btn.style.backgroundColor = 'var(--primary-color)';
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                        btn.style.color = 'var(--bg-color)';
+                        matchForm.reset();
+                    }, 3000);
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

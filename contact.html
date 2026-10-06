@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sportzal va individual trening | Контакты</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --surface-color: #111111;
+            --surface-light: #1a1a1a;
+            --primary-color: #cfff04;
+            --primary-hover: #b3e600;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --font-headers: 'Syne', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        html { scroll-behavior: smooth; background-color: var(--bg-color); }
+        body { font-family: var(--font-body); color: var(--text-main); background-color: var(--bg-color); overflow-x: hidden; line-height: 1.6; }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-light); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        .cursor-dot, .cursor-outline {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--primary-color); }
+        .cursor-outline { width: 40px; height: 40px; border: 2px solid var(--primary-color); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--bg-color);
+            z-index: 10000; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .loader-text {
+            font-family: var(--font-headers); font-size: 3rem; color: transparent;
+            -webkit-text-stroke: 1px var(--primary-color); text-transform: uppercase; letter-spacing: 5px; animation: pulseText 1.5s infinite;
+        }
+        @keyframes pulseText {
+            0% { text-shadow: none; color: transparent; }
+            50% { text-shadow: 0 0 20px var(--primary-color); color: var(--primary-color); }
+            100% { text-shadow: none; color: transparent; }
+        }
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 5%;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: var(--transition);
+        }
+        header.scrolled {
+            background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 15px 5%;
+        }
+        .logo { font-family: var(--font-headers); font-size: 1.8rem; font-weight: 800; color: var(--text-main); text-decoration: none; text-transform: uppercase; }
+        .logo span { color: var(--primary-color); }
+        nav ul { list-style: none; display: flex; gap: 40px; }
+        nav ul li a {
+            color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            text-transform: uppercase; position: relative; padding: 5px 0; transition: var(--transition);
+        }
+        nav ul li a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: var(--primary-color); transition: var(--transition); }
+        nav ul li a:hover { color: var(--primary-color); }
+        nav ul li a:hover::after, nav ul li a.active::after { width: 100%; }
+        nav ul li a.active { color: var(--primary-color); }
+
+        .join-btn {
+            background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color);
+            padding: 12px 30px; font-family: var(--font-body); font-weight: 800; text-transform: uppercase;
+            border-radius: 50px; transition: var(--transition); position: relative; overflow: hidden; z-index: 1;
+        }
+        .join-btn::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 100%; background-color: var(--primary-color); z-index: -1; transition: var(--transition); }
+        .join-btn:hover { color: var(--bg-color); }
+        .join-btn:hover::before { width: 100%; }
+
+        .page-banner {
+            position: relative; padding: 180px 5% 60px;
+            background: linear-gradient(180deg, rgba(20,20,20,0.9) 0%, var(--bg-color) 100%),
+                        url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=2070&auto=format&fit=crop') center/cover;
+            text-align: center;
+        }
+        .banner-title { font-family: var(--font-headers); font-size: 4.5rem; text-transform: uppercase; line-height: 1.1; margin-bottom: 20px; }
+        .banner-title span { color: var(--primary-color); }
+        .banner-subtitle { color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto; }
+
+        /* CONTACT GRID */
+        .contact-section { padding: 80px 5%; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 1200px; margin: 0 auto; align-items: start; }
+        
+        .contact-info { display: flex; flex-direction: column; gap: 30px; }
+        .info-card {
+            background: var(--surface-color); padding: 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; gap: 20px; transition: var(--transition);
+        }
+        .info-card:hover { border-color: var(--primary-color); transform: translateX(10px); }
+        .info-icon {
+            width: 60px; height: 60px; background: rgba(207,255,4,0.1); border-radius: 50%; display: flex;
+            justify-content: center; align-items: center; font-size: 1.5rem; color: var(--primary-color); flex-shrink: 0;
+        }
+        .info-text h4 { font-family: var(--font-headers); font-size: 1.2rem; text-transform: uppercase; margin-bottom: 5px; }
+        .info-text p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* FORM */
+        .contact-form-wrap {
+            background: var(--surface-color); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .form-title { font-family: var(--font-headers); font-size: 2rem; margin-bottom: 10px; text-transform: uppercase; }
+        .form-subtitle { color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+        .form-control {
+            width: 100%; background: var(--surface-light); border: 1px solid #333; padding: 15px; color: #fff;
+            font-family: var(--font-body); border-radius: 8px; outline: none; transition: var(--transition);
+        }
+        .form-control:focus { border-color: var(--primary-color); }
+        textarea.form-control { resize: none; height: 120px; }
+
+        .submit-btn {
+            width: 100%; background: var(--primary-color); color: var(--bg-color); border: none; padding: 18px;
+            font-family: var(--font-headers); font-size: 1.1rem; font-weight: 800; text-transform: uppercase;
+            border-radius: 8px; transition: var(--transition);
+        }
+        .submit-btn:hover { background: var(--text-main); color: var(--bg-color); }
+
+        /* MAP */
+        .map-section { padding: 0 5% 100px; max-width: 1300px; margin: 0 auto; }
+        .map-container {
+            width: 100%; height: 450px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(207,255,4,0.2);
+            filter: grayscale(100%) invert(90%) contrast(120%); transition: var(--transition);
+        }
+        .map-container:hover { filter: grayscale(0%) invert(0%) contrast(100%); }
+
+        footer { background-color: #000; padding: 80px 5% 30px; border-top: 1px solid #222; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; margin-bottom: 50px; }
+        .footer-about p { color: var(--text-muted); margin-top: 20px; max-width: 300px; }
+        .footer-title { font-family: var(--font-headers); font-size: 1.2rem; margin-bottom: 25px; text-transform: uppercase; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 15px; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .footer-links a:hover { color: var(--primary-color); padding-left: 10px; }
+        .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid #222; color: #555; font-size: 0.9rem; }
+
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 992px) {
+            .contact-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <div id="preloader">
+        <div class="loader-text">Контакты...</div>
+    </div>
+
+    <header id="header">
+        <a href="index.html" class="logo">Sport<span>zal</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="programs.html">Programs</a></li>
+                <li><a href="trainers.html">Trainers</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+        </nav>
+        <button class="join-btn">Вступить в клуб</button>
+    </header>
+
+    <main>
+        <section class="page-banner">
+            <h1 class="banner-title">Свяжись <span>с нами</span></h1>
+            <p class="banner-subtitle">Остались вопросы? Запишись на гостевой визит или свяжись с нашей командой напрямую.</p>
+        </section>
+
+        <section class="contact-section">
+            <div class="contact-grid">
+                
+                <div class="contact-info reveal">
+                    <div class="info-card">
+                        <div class="info-icon">📍</div>
+                        <div class="info-text">
+                            <h4>Наш Адрес</h4>
+                            <p>г. Ташкент, Мирабадский район, ул. Фидокор 12/2</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">📞</div>
+                        <div class="info-text">
+                            <h4>Телефон</h4>
+                            <p>+998 (90) 123-45-67 / +998 (71) 200-00-00</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">⏰</div>
+                        <div class="info-text">
+                            <h4>Режим работы</h4>
+                            <p>Пн - Сб: 06:00 - 00:00<br>Воскресенье: 08:00 - 22:00</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">💬</div>
+                        <div class="info-text">
+                            <h4>Telegram Bot</h4>
+                            <p>@sportzal_tashkent_bot (Запись за 1 минуту)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrap reveal">
+                    <h3 class="form-title">Записаться на визит</h3>
+                    <p class="form-subtitle">Заполни форму, и менеджер перезвонит тебе в течение 10 минут.</p>
+                    
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label>Ваше Имя</label>
+                            <input type="text" class="form-control" placeholder="Алексей" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Номер Телефона</label>
+                            <input type="tel" class="form-control" placeholder="+998 90 123 45 67" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Интересующая программа</label>
+                            <select class="form-control">
+                                <option>Персональный тренинг</option>
+                                <option>Кроссфит & Сила</option>
+                                <option>Йога & Стретчинг</option>
+                                <option>Самостоятельный тренажерный зал</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Комментарий (необязательно)</label>
+                            <textarea class="form-control" placeholder="Укажите удобное время для звонка..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" id="submitBtn">Отправить заявку</button>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MAP -->
+        <section class="map-section reveal">
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d47953.51528659556!2d69.2400984!3d41.2994958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38ae8b0cc379e9c3%3A0xa5a9323b4aa5cb98!2sTashkent%2C%20Uzbekistan!5e0!3m2!1sen!2s!4v1680000000000!5m2!1sen!2s" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-about">
+                <a href="index.html" class="logo">Sport<span>zal</span></a>
+                <p>Центр трансформации тела и духа в Ташкенте.</p>
+            </div>
+            <div>
+                <h4 class="footer-title">Навигация</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="programs.html">Программы</a></li>
+                    <li><a href="trainers.html">Тренеры</a></li>
+                    <li><a href="pricing.html">Тарифы</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">Услуги</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Кроссфит</a></li>
+                    <li><a href="#">Бодибилдинг</a></li>
+                    <li><a href="#">Йога & Пилатес</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">Контакты</h4>
+                <ul class="footer-links">
+                    <li>📍 Ташкент, Узбекистан</li>
+                    <li>📞 +998 90 123 45 67</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 Sportzal va individual trening. Все права защищены.</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.display = 'none'; }, 800);
+            }, 800);
+
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            window.addEventListener('mousemove', (e) => {
+                cursorDot.style.left = `${e.clientX}px`; cursorDot.style.top = `${e.clientY}px`;
+                cursorOutline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+            });
+
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) header.classList.add('scrolled');
+                else header.classList.remove('scrolled');
+            });
+
+            // CONTACT FORM
+            const form = document.getElementById('contactForm');
+            const btn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                btn.innerText = 'Отправка...';
+                btn.style.backgroundColor = '#fff';
+                btn.style.color = '#000';
+
+                setTimeout(() => {
+                    btn.innerText = 'Заявка принята! Ждите звонка';
+                    btn.style.backgroundColor = 'var(--primary-color)';
+                    form.reset();
+                    setTimeout(() => {
+                        btn.innerText = 'Отправить заявку';
+                    }, 4000);
+                }, 1500);
+            });
+
+            const reveals = document.querySelectorAll('.reveal');
+            const revealOnScroll = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            reveals.forEach(r => revealOnScroll.observe(r));
+        });
+    </script>
+</body>
+</html>

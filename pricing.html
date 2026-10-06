@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sportzal va individual trening | Тарифы</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --surface-color: #111111;
+            --surface-light: #1a1a1a;
+            --primary-color: #cfff04;
+            --primary-hover: #b3e600;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --font-headers: 'Syne', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        html { scroll-behavior: smooth; background-color: var(--bg-color); }
+        body { font-family: var(--font-body); color: var(--text-main); background-color: var(--bg-color); overflow-x: hidden; line-height: 1.6; }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-light); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        .cursor-dot, .cursor-outline {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--primary-color); }
+        .cursor-outline { width: 40px; height: 40px; border: 2px solid var(--primary-color); transition: width 0.2s, height 0.2s, background-color 0.2s; }
+
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--bg-color);
+            z-index: 10000; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .loader-text {
+            font-family: var(--font-headers); font-size: 3rem; color: transparent;
+            -webkit-text-stroke: 1px var(--primary-color); text-transform: uppercase; letter-spacing: 5px; animation: pulseText 1.5s infinite;
+        }
+        @keyframes pulseText {
+            0% { text-shadow: none; color: transparent; }
+            50% { text-shadow: 0 0 20px var(--primary-color); color: var(--primary-color); }
+            100% { text-shadow: none; color: transparent; }
+        }
+
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 5%;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000; transition: var(--transition);
+        }
+        header.scrolled {
+            background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding: 15px 5%;
+        }
+        .logo { font-family: var(--font-headers); font-size: 1.8rem; font-weight: 800; color: var(--text-main); text-decoration: none; text-transform: uppercase; }
+        .logo span { color: var(--primary-color); }
+        nav ul { list-style: none; display: flex; gap: 40px; }
+        nav ul li a {
+            color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            text-transform: uppercase; position: relative; padding: 5px 0; transition: var(--transition);
+        }
+        nav ul li a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: var(--primary-color); transition: var(--transition); }
+        nav ul li a:hover { color: var(--primary-color); }
+        nav ul li a:hover::after, nav ul li a.active::after { width: 100%; }
+        nav ul li a.active { color: var(--primary-color); }
+
+        .join-btn {
+            background-color: transparent; color: var(--primary-color); border: 2px solid var(--primary-color);
+            padding: 12px 30px; font-family: var(--font-body); font-weight: 800; text-transform: uppercase;
+            border-radius: 50px; transition: var(--transition); position: relative; overflow: hidden; z-index: 1;
+        }
+        .join-btn::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 100%; background-color: var(--primary-color); z-index: -1; transition: var(--transition); }
+        .join-btn:hover { color: var(--bg-color); }
+        .join-btn:hover::before { width: 100%; }
+
+        .page-banner {
+            position: relative; padding: 180px 5% 60px;
+            background: linear-gradient(180deg, rgba(20,20,20,0.9) 0%, var(--bg-color) 100%),
+                        url('https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=2070&auto=format&fit=crop') center/cover;
+            text-align: center;
+        }
+        .banner-title { font-family: var(--font-headers); font-size: 4.5rem; text-transform: uppercase; line-height: 1.1; margin-bottom: 20px; }
+        .banner-title span { color: var(--primary-color); }
+        .banner-subtitle { color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto 40px; }
+
+        /* TOGGLE BILLING */
+        .toggle-container {
+            display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 50px;
+        }
+        .toggle-label { font-family: var(--font-headers); text-transform: uppercase; font-size: 1.1rem; font-weight: 700; color: var(--text-muted); }
+        .toggle-label.active { color: var(--text-main); }
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--surface-light); border: 1px solid #333; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 26px; width: 26px; left: 3px; bottom: 3px;
+            background-color: var(--primary-color); transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .discount-badge {
+            background: rgba(207,255,4,0.15); color: var(--primary-color); border: 1px solid var(--primary-color);
+            padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+        }
+
+        /* PRICING CARDS */
+        .pricing-section { padding: 40px 5% 100px; }
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; align-items: stretch;
+        }
+        .pricing-card {
+            background: var(--surface-color); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
+            padding: 40px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: var(--transition);
+        }
+        .pricing-card:hover { transform: translateY(-10px); border-color: rgba(207,255,4,0.3); }
+        .pricing-card.popular {
+            border: 2px solid var(--primary-color); box-shadow: 0 0 30px rgba(207,255,4,0.15); background: linear-gradient(180deg, #161a05 0%, var(--surface-color) 100%);
+        }
+        .popular-tag {
+            position: absolute; top: -15px; right: 30px; background: var(--primary-color); color: var(--bg-color);
+            padding: 5px 15px; border-radius: 20px; font-family: var(--font-headers); font-weight: 800; font-size: 0.8rem; text-transform: uppercase;
+        }
+        .plan-name { font-family: var(--font-headers); font-size: 2rem; margin-bottom: 10px; }
+        .plan-price { font-family: var(--font-headers); font-size: 3rem; font-weight: 800; color: var(--primary-color); margin-bottom: 5px; }
+        .plan-price span { font-size: 1rem; color: var(--text-muted); font-family: var(--font-body); font-weight: 400; }
+        .plan-period { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; }
+        
+        .plan-features { list-style: none; margin-bottom: 40px; flex-grow: 1; }
+        .plan-features li { margin-bottom: 15px; font-size: 0.95rem; color: #ccc; display: flex; align-items: center; gap: 10px; }
+        .plan-features li.disabled { color: #555; text-decoration: line-through; }
+        .check-icon { color: var(--primary-color); font-weight: bold; }
+
+        .plan-btn {
+            width: 100%; padding: 15px; border-radius: 10px; border: 2px solid var(--primary-color);
+            background: transparent; color: var(--primary-color); font-family: var(--font-headers); font-weight: 800;
+            text-transform: uppercase; transition: var(--transition); text-align: center; text-decoration: none; display: block;
+        }
+        .plan-btn:hover, .popular .plan-btn { background: var(--primary-color); color: var(--bg-color); }
+        .popular .plan-btn:hover { background: var(--text-main); color: var(--bg-color); border-color: var(--text-main); }
+
+        /* FAQ SECTION */
+        .faq-section { background: var(--surface-color); padding: 100px 5%; border-top: 1px solid #222; }
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-title { font-family: var(--font-headers); font-size: 3rem; text-align: center; margin-bottom: 50px; }
+        .faq-title span { color: var(--primary-color); }
+        .faq-item { border-bottom: 1px solid #222; margin-bottom: 20px; padding-bottom: 20px; }
+        .faq-question {
+            font-family: var(--font-headers); font-size: 1.3rem; font-weight: 700; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; transition: var(--transition);
+        }
+        .faq-question:hover { color: var(--primary-color); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.4s ease; color: var(--text-muted); font-size: 1rem; }
+        .faq-item.active .faq-answer { max-height: 200px; margin-top: 15px; }
+        .faq-icon { font-size: 1.5rem; color: var(--primary-color); transition: transform 0.4s; }
+        .faq-item.active .faq-icon { transform: rotate(45deg); }
+
+        footer { background-color: #000; padding: 80px 5% 30px; border-top: 1px solid #222; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; margin-bottom: 50px; }
+        .footer-about p { color: var(--text-muted); margin-top: 20px; max-width: 300px; }
+        .footer-title { font-family: var(--font-headers); font-size: 1.2rem; margin-bottom: 25px; text-transform: uppercase; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 15px; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); }
+        .footer-links a:hover { color: var(--primary-color); padding-left: 10px; }
+        .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid #222; color: #555; font-size: 0.9rem; }
+
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            nav ul { display: none; }
+            .banner-title { font-size: 3rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <div id="preloader">
+        <div class="loader-text">Тарифы...</div>
+    </div>
+
+    <header id="header">
+        <a href="index.html" class="logo">Sport<span>zal</span></a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="programs.html">Programs</a></li>
+                <li><a href="trainers.html">Trainers</a></li>
+                <li><a href="pricing.html" class="active">Pricing</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <button class="join-btn">Вступить в клуб</button>
+    </header>
+
+    <main>
+        <section class="page-banner">
+            <h1 class="banner-title">Выбери свой <span>Тариф</span></h1>
+            <p class="banner-subtitle">Прозрачные цены без скрытых платежей. Инвестируй в свое здоровье и форму выгодно.</p>
+            
+            <div class="toggle-container">
+                <span class="toggle-label active" id="labelMonthly">Месяц</span>
+                <label class="switch">
+                    <input type="checkbox" id="billingToggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label" id="labelYearly">Год</span>
+                <span class="discount-badge">-20% Скидка</span>
+            </div>
+        </section>
+
+        <section class="pricing-section">
+            <div class="pricing-grid">
+                
+                <!-- START -->
+                <div class="pricing-card reveal">
+                    <div>
+                        <h3 class="plan-name">Start</h3>
+                        <div class="plan-price" id="priceStart">450 000 <span>сум</span></div>
+                        <div class="plan-period" id="periodStart">за 1 месяц</div>
+                        <ul class="plan-features">
+                            <li><span class="check-icon">✓</span> Безлимитный доступ в зал (08:00 - 17:00)</li>
+                            <li><span class="check-icon">✓</span> Вводный инструктаж тренера</li>
+                            <li><span class="check-icon">✓</span> Доступ в кардио и силовую зону</li>
+                            <li class="disabled"><span>✕</span> Групповые занятия</li>
+                            <li class="disabled"><span>✕</span> Финская сауна и SPA</li>
+                        </ul>
+                    </div>
+                    <a href="contact.html" class="plan-btn">Выбрать Start</a>
+                </div>
+
+                <!-- PRO (POPULAR) -->
+                <div class="pricing-card popular reveal">
+                    <span class="popular-tag">Популярный</span>
+                    <div>
+                        <h3 class="plan-name">Pro Club</h3>
+                        <div class="plan-price" id="pricePro">750 000 <span>сум</span></div>
+                        <div class="plan-period" id="periodPro">за 1 месяц</div>
+                        <ul class="plan-features">
+                            <li><span class="check-icon">✓</span> 24/7 Безлимитный доступ во все зоны</li>
+                            <li><span class="check-icon">✓</span> Все групповые программы (Crossfit, Yoga)</li>
+                            <li><span class="check-icon">✓</span> Доступ в SPA & Сауну</li>
+                            <li><span class="check-icon">✓</span> 2 персональные тренировки с наставником</li>
+                            <li class="disabled"><span>✕</span> Заморозка абонемента</li>
+                        </ul>
+                    </div>
+                    <a href="contact.html" class="plan-btn">Выбрать Pro</a>
+                </div>
+
+                <!-- VIP -->
+                <div class="pricing-card reveal">
+                    <div>
+                        <h3 class="plan-name">VIP All In</h3>
+                        <div class="plan-price" id="priceVip">1 300 000 <span>сум</span></div>
+                        <div class="plan-period" id="periodVip">за 1 месяц</div>
+                        <ul class="plan-features">
+                            <li><span class="check-icon">✓</span> Полный доступ 24/7 + VIP шкафчик</li>
+                            <li><span class="check-icon">✓</span> Безлимитные персональные тренировки</li>
+                            <li><span class="check-icon">✓</span> Составление индивидуального плана питания</li>
+                            <li><span class="check-icon">✓</span> Гостевые визиты (+2 друга в месяц)</li>
+                            <li><span class="check-icon">✓</span> Бесплатная заморозка до 30 дней</li>
+                        </ul>
+                    </div>
+                    <a href="contact.html" class="plan-btn">Выбрать VIP</a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq-section reveal">
+            <div class="faq-container">
+                <h2 class="faq-title">Часто задаваемые <span>вопросы</span></h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Что входит в первую бесплатную тренировку? <span class="faq-icon">+</span></div>
+                    <div class="faq-answer">На первой тренировке тренер проведет анализ состава тела (InBody), определит твои цели и подберет стартовую нагрузку без риска для здоровья.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Можно ли заморозить абонемент, если я уеду? <span class="faq-icon">+</span></div>
+                    <div class="faq-answer">Да, на тарифах Pro и VIP доступна функция бесплатной заморозки абонемента от 7 до 30 дней прямо через наше мобильное приложение или Telegram-бота.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Какие способы оплаты вы принимаете? <span class="faq-icon">+</span></div>
+                    <div class="faq-answer">Мы принимаем наличные, карты Uzcard, Humo, Visa, Mastercard, а также переводы через Payme, Click и Anorbank.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-about">
+                <a href="index.html" class="logo">Sport<span>zal</span></a>
+                <p>Центр трансформации тела и духа в Ташкенте.</p>
+            </div>
+            <div>
+                <h4 class="footer-title">Навигация</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="programs.html">Программы</a></li>
+                    <li><a href="trainers.html">Тренеры</a></li>
+                    <li><a href="pricing.html">Тарифы</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">Услуги</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Кроссфит</a></li>
+                    <li><a href="#">Бодибилдинг</a></li>
+                    <li><a href="#">Йога & Пилатес</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">Контакты</h4>
+                <ul class="footer-links">
+                    <li>📍 Ташкент, Узбекистан</li>
+                    <li>📞 +998 90 123 45 67</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 Sportzal va individual trening. Все права защищены.</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.display = 'none'; }, 800);
+            }, 800);
+
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            window.addEventListener('mousemove', (e) => {
+                cursorDot.style.left = `${e.clientX}px`; cursorDot.style.top = `${e.clientY}px`;
+                cursorOutline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+            });
+
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) header.classList.add('scrolled');
+                else header.classList.remove('scrolled');
+            });
+
+            // LOGIC FOR PRICING TOGGLE
+            const toggle = document.getElementById('billingToggle');
+            const priceStart = document.getElementById('priceStart');
+            const pricePro = document.getElementById('pricePro');
+            const priceVip = document.getElementById('priceVip');
+            const labelMonthly = document.getElementById('labelMonthly');
+            const labelYearly = document.getElementById('labelYearly');
+
+            toggle.addEventListener('change', () => {
+                if(toggle.checked) {
+                    labelMonthly.classList.remove('active');
+                    labelYearly.classList.add('active');
+                    priceStart.innerHTML = '4 320 000 <span>сум</span>';
+                    pricePro.innerHTML = '7 200 000 <span>сум</span>';
+                    priceVip.innerHTML = '12 480 000 <span>сум</span>';
+                    document.querySelectorAll('.plan-period').forEach(p => p.innerText = 'за 1 год (-20%)');
+                } else {
+                    labelMonthly.classList.add('active');
+                    labelYearly.classList.remove('active');
+                    priceStart.innerHTML = '450 000 <span>сум</span>';
+                    pricePro.innerHTML = '750 000 <span>сум</span>';
+                    priceVip.innerHTML = '1 300 000 <span>сум</span>';
+                    document.querySelectorAll('.plan-period').forEach(p => p.innerText = 'за 1 месяц');
+                }
+            });
+
+            // FAQ ACCORDION
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    item.classList.toggle('active');
+                });
+            });
+
+            const reveals = document.querySelectorAll('.reveal');
+            const revealOnScroll = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            reveals.forEach(r => revealOnScroll.observe(r));
+        });
+    </script>
+</body>
+</html>
